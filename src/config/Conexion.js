@@ -2,18 +2,18 @@ const { initializeApp, getApps } = require("firebase/app");
 
 // Configuración de Firebase
 const firebaseConfig = {
-    apiKey: "AIzaSyBxrcIKdwV9kLuCgy6HhhH7nVmnZhHWV5Q",
-    authDomain: "notes-app-e2ea9.firebaseapp.com",
-    projectId: "notes-app-e2ea9",
-    storageBucket: "notes-app-e2ea9.appspot.com",
-    messagingSenderId: "333211508078",
-    appId: "1:333211508078:web:9cbd017db80b29d39d357f"
+  apiKey: "AIzaSyCLpSwe4Y3RksuKYbf1qgBh_4lO_Z_md-U",
+  authDomain: "proyecto-cdlr.firebaseapp.com",
+  projectId: "proyecto-cdlr",
+  storageBucket: "proyecto-cdlr.appspot.com",
+  messagingSenderId: "900361880229",
+  appId: "1:900361880229:web:911dcf308b6f6bef69434c"
 };
 
 // Inicializa Firebase
 const app = initializeApp(firebaseConfig);
 module.exports = app; 
-// Verificar la conexión a Firebase
+
 if (getApps().length > 0) {
   console.log('Conexión de Firebase establecida exitosamente');
   // Puedes agregar código adicional aquí para interactuar con Firebase
