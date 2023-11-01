@@ -8,26 +8,25 @@ const path = require('path');
 module.exports = {
   index: async function (req, res) {
     const crudCollection = collection(db, "CRUD"); 
-    const librosSnapshot = await getDocs(crudCollection); 
-    const libros = librosSnapshot.docs.map((doc) => {
+    const CrudSnapshot = await getDocs(crudCollection); 
+    const CRUD = CrudSnapshot.docs.map((doc) => {
       const data = doc.data();
       return { id: doc.id, nombre: data.nombre, imagen: data.imagen };
     });
 
-    res.render('libros/index', { libros: libros });
+    res.render('Crud/index', { CRUD: CRUD });
   },
 
   crear: function (req, res) {
-    res.render('libros/crear');
+    res.render('Crud/crear');
   },
 
   creardato: async function (req, res) {
     try {
       const { nombre } = req.body;
-      let imagen = null; // Inicializa imagen como null
+      let imagen = null; 
 
       if (req.file) {
-        // Si se ha subido una imagen, asigna el nombre del archivo a la variable imagen
         imagen = req.file.filename;
       }
 
@@ -39,7 +38,7 @@ module.exports = {
 
       await addDoc(crudCollection, nuevodato); 
 
-      res.redirect('/crud'); // Redirige al CRUD después de guardar el libro
+      res.redirect('/crud'); 
     } catch (error) {
       console.error("Error al agregar libro: ", error);
       res.status(500).send("Error al agregar libro: " + error.message);
@@ -48,7 +47,7 @@ module.exports = {
 
   eliminar: async function (req, res) {
     try {
-      const id = req.params.id; // Obtén el ID del elemento a eliminar
+      const id = req.params.id; 
   
       const crudCollection = collection(db, "CRUD"); 
       const elementoRef = doc(crudCollection, id); 
@@ -82,12 +81,12 @@ module.exports = {
   mostrarFormularioEdicion: async function (req, res) {
     const id = req.params.id;
     const crudCollection = collection(db, 'CRUD'); 
-    const libroRef = doc(crudCollection, id); 
-    const libroSnapshot = await getDoc(libroRef);
+    const CrudRef = doc(crudCollection, id); 
+    const CrudSnapshot = await getDoc(CrudRef);
 
-    if (libroSnapshot.exists()) {
-      const libroData = libroSnapshot.data();
-      res.render('libros/editar', { libro: libroData, id: id }); // Pasar el 'id' a la vista
+    if (CrudSnapshot.exists()) {
+      const CrudData = CrudSnapshot.data();
+      res.render('Crud/editar', { Tabla: CrudData, id: id }); // Pasar el 'id' a la vista
     } else {
       res.status(404).send('El libro no se encontró en la base de datos.');
     }
@@ -99,11 +98,11 @@ module.exports = {
       const { nombre, imagen } = req.body;
 
       const crudCollection = collection(db, "CRUD"); 
-      const libroRef = doc(crudCollection, id); 
-      const libroSnapshot = await getDoc(libroRef);
+      const CrudRef = doc(crudCollection, id); 
+      const CrudSnapshot = await getDoc(CrudRef);
 
-      if (libroSnapshot.exists()) {
-        const libroData = libroSnapshot.data();
+      if (CrudSnapshot.exists()) {
+        const CrudData = CrudSnapshot.data();
 
         // Verifica si se ha subido una nueva imagen
         if (req.file) {
@@ -111,20 +110,20 @@ module.exports = {
           const nuevaImagen = req.file.filename;
 
           // Borra la imagen antigua del servidor si es necesario
-          if (libroData.imagen) {
-            const imagePath = path.join(__dirname, '../public/imagenes', libroData.imagen);
+          if (CrudData.imagen) {
+            const imagePath = path.join(__dirname, '../public/imagenes', CrudData.imagen);
             fs.unlinkSync(imagePath);
           }
 
           // Actualiza el campo 'imagen' con el nombre de la nueva imagen
-          libroData.imagen = nuevaImagen;
+          CrudData.imagen = nuevaImagen;
         }
 
         // Actualiza el campo 'nombre'
-        libroData.nombre = nombre;
+        CrudData.nombre = nombre;
 
         // Actualiza el documento en Firestore
-        await updateDoc(libroRef, libroData);
+        await updateDoc(CrudRef, CrudData);
 
         console.log("Libro actualizado en Firestore.");
         res.redirect("/crud");

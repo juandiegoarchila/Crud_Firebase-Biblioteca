@@ -14,28 +14,28 @@
             </tr>
         </thead>
         <tbody>
-            <% if (libros && libros.length > 0) { %>
+            <% if (CRUD && CRUD.length > 0) { %>
                 <% let counter = 1; %>
-                <% libros.forEach(libro => { %>
+                <% CRUD.forEach(Tabla => { %>
                   <tr>
                     <td>
                       <%= counter %>
                     </td>
                     <td>
-                        <%= libro.nombre %>
+                        <%= Tabla.nombre %>
                     </td>
                     <td>
-                        <img class="img-thumbnail" width="100" src="/imagenes/<%= libro.imagen %>" alt="">
+                        <img class="img-thumbnail" width="100" src="/imagenes/<%= Tabla.imagen %>" alt="">
                     </td>
                     <td>
                         <div class="btn-group-vertical" role="group" aria-label="vertical button group">
-                            <a href="/crud/editar/<%= libro.id %>" class="btn btn-warning">Editar</a>
+                            <a href="/crud/editar/<%= Tabla.id %>" class="btn btn-warning">Editar</a>
                         </div>
                         
 
                         |
                         <div class="btn-group-vertical" role="group" aria-label="vertical button group">
-                            <form action="/crud/eliminar/<%= libro.id %>" method="POST">
+                            <form action="/crud/eliminar/<%= Tabla.id %>" method="POST">
                                 <input type="hidden" name="_method" value="DELETE">
                                 <button class="btn btn-danger" type="submit">Borrar</button>
                             </form>
@@ -47,7 +47,7 @@
                 <% }); %>
                 <% } else { %>
                 <tr>
-                    <td colspan="4">No hay libros disponibles.</td>
+                    <td colspan="4">No hay Libros disponibles.</td>
                 </tr>
                 <% } %>
         </tbody>

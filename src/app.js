@@ -23,7 +23,7 @@ app.use(methodOverride('_method'));
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-// Rutas para el CRUD de libros
+// Rutas para el CRUD 
 app.use('/crud', crudRouter); // Asegúrate de que la ruta '/crud' coincida con la que estás utilizando en tus definiciones de rutas
 
 const port = process.env.PORT || 4000;
