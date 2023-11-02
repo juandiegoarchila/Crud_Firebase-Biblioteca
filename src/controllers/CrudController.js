@@ -24,26 +24,37 @@ module.exports = {
   creardato: async function (req, res) {
     try {
       const { nombre } = req.body;
-      let imagen = null; 
-
+      let imagen = null;
+  
       if (req.file) {
         imagen = req.file.filename;
       }
-
-      const crudCollection = collection(db, "CRUD"); 
+  
+      if (!nombre && !imagen) {
+        req.flash('error_msg', 'Debes proporcionar al menos un campo (nombre o archivo)');
+        // Pasa el nombre ingresado por el usuario de vuelta al formulario
+        return res.render('Crud/crear', { nombre, error_msg: req.flash('error_msg') });
+      }
+  
+      const crudCollection = collection(db, "CRUD");
       const nuevodato = {
         nombre,
         imagen,
       };
-
-      await addDoc(crudCollection, nuevodato); 
-
-      res.redirect('/crud'); 
+  
+      await addDoc(crudCollection, nuevodato);
+  
+      // Agrega un mensaje de éxito a los flash antes de redirigir
+      req.flash('success_msg', 'Creación de un nuevo libro');
+  
+      res.redirect('/crud');
     } catch (error) {
-      console.error("Error al agregar libro: ", error);
-      res.status(500).send("Error al agregar libro: " + error.message);
+      console.error("Error al agregar dato: ", error);
+      res.status(500).send("Error al agregar dato: " + error.message);
     }
-  },
+  }
+  ,
+
 
   eliminar: async function (req, res) {
     try {
@@ -68,6 +79,9 @@ module.exports = {
         // Luego, elimina el elemento en Firestore
         await deleteDoc(elementoRef);
   
+        // Agrega un mensaje de éxito a los flash antes de redirigir
+        req.flash('success_msg', 'Libro eliminado con éxito');
+  
         res.redirect('/crud'); // Redirige a la página de lista de elementos después de la eliminación
       } else {
         res.status(404).send("El elemento no se encontró en la base de datos.");
@@ -77,6 +91,7 @@ module.exports = {
       res.status(500).send("Error al eliminar elemento: " + error.message);
     }
   },
+  
   
   mostrarFormularioEdicion: async function (req, res) {
     const id = req.params.id;
@@ -96,36 +111,38 @@ module.exports = {
     try {
       const id = req.body.id;
       const { nombre, imagen } = req.body;
-
+  
       const crudCollection = collection(db, "CRUD"); 
       const CrudRef = doc(crudCollection, id); 
       const CrudSnapshot = await getDoc(CrudRef);
-
+  
       if (CrudSnapshot.exists()) {
         const CrudData = CrudSnapshot.data();
-
+  
         // Verifica si se ha subido una nueva imagen
         if (req.file) {
           // Procesa y guarda la nueva imagen en el servidor
           const nuevaImagen = req.file.filename;
-
+  
           // Borra la imagen antigua del servidor si es necesario
           if (CrudData.imagen) {
             const imagePath = path.join(__dirname, '../public/imagenes', CrudData.imagen);
             fs.unlinkSync(imagePath);
           }
-
+  
           // Actualiza el campo 'imagen' con el nombre de la nueva imagen
           CrudData.imagen = nuevaImagen;
         }
-
+  
         // Actualiza el campo 'nombre'
         CrudData.nombre = nombre;
-
+  
         // Actualiza el documento en Firestore
         await updateDoc(CrudRef, CrudData);
-
-        console.log("Libro actualizado en Firestore.");
+  
+        // Agrega un mensaje de éxito a los flash antes de redirigir
+        req.flash('success_msg', 'El libro fue actualizado con éxito');
+  
         res.redirect("/crud");
       } else {
         console.log("Libro no encontrado en Firestore. Redireccionando...");
@@ -136,4 +153,4 @@ module.exports = {
       res.status(500).send("Error al actualizar el libro: " + error.message);
     }
   }
-};
+}  
