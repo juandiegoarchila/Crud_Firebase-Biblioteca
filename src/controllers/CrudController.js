@@ -31,8 +31,7 @@ module.exports = {
       }
   
       if (!nombre && !imagen) {
-        req.flash('error_msg', 'Debes proporcionar al menos un campo (nombre o archivo)');
-        // Pasa el nombre ingresado por el usuario de vuelta al formulario
+        req.flash('error_msg', 'Debes proporcionar al menos un campo (Nombre o Imagen)');
         return res.render('Crud/crear', { nombre, error_msg: req.flash('error_msg') });
       }
   
@@ -43,9 +42,7 @@ module.exports = {
       };
   
       await addDoc(crudCollection, nuevodato);
-  
-      // Agrega un mensaje de éxito a los flash antes de redirigir
-      req.flash('success_msg', 'Creación de un nuevo libro');
+        req.flash('success_msg', 'Creación de un nuevo libro');
   
       res.redirect('/crud');
     } catch (error) {
@@ -63,26 +60,21 @@ module.exports = {
       const crudCollection = collection(db, "CRUD"); 
       const elementoRef = doc(crudCollection, id); 
   
-      // Obtén el elemento y verifica si existe
       const elementoSnapshot = await getDoc(elementoRef);
   
       if (elementoSnapshot.exists()) {
         const elementoData = elementoSnapshot.data();
   
-        // Verifica si hay una imagen antes de intentar eliminarla (si es aplicable)
         if (elementoData.imagen) {
-          // Elimina el archivo de imagen si es necesario
           const imagePath = path.join(__dirname, '../public/imagenes', elementoData.imagen);
           fs.unlinkSync(imagePath);
         }
   
-        // Luego, elimina el elemento en Firestore
         await deleteDoc(elementoRef);
   
-        // Agrega un mensaje de éxito a los flash antes de redirigir
-        req.flash('success_msg', 'Libro eliminado con éxito');
+        req.flash('error_msg', 'Libro eliminado con éxito');
   
-        res.redirect('/crud'); // Redirige a la página de lista de elementos después de la eliminación
+        res.redirect('/crud'); 
       } else {
         res.status(404).send("El elemento no se encontró en la base de datos.");
       }
@@ -101,7 +93,7 @@ module.exports = {
 
     if (CrudSnapshot.exists()) {
       const CrudData = CrudSnapshot.data();
-      res.render('Crud/editar', { Tabla: CrudData, id: id }); // Pasar el 'id' a la vista
+      res.render('Crud/editar', { Tabla: CrudData, id: id }); 
     } else {
       res.status(404).send('El libro no se encontró en la base de datos.');
     }
@@ -119,28 +111,17 @@ module.exports = {
       if (CrudSnapshot.exists()) {
         const CrudData = CrudSnapshot.data();
   
-        // Verifica si se ha subido una nueva imagen
         if (req.file) {
-          // Procesa y guarda la nueva imagen en el servidor
           const nuevaImagen = req.file.filename;
-  
-          // Borra la imagen antigua del servidor si es necesario
-          if (CrudData.imagen) {
+            if (CrudData.imagen) {
             const imagePath = path.join(__dirname, '../public/imagenes', CrudData.imagen);
             fs.unlinkSync(imagePath);
           }
-  
-          // Actualiza el campo 'imagen' con el nombre de la nueva imagen
-          CrudData.imagen = nuevaImagen;
+            CrudData.imagen = nuevaImagen;
         }
+          CrudData.nombre = nombre;
+          await updateDoc(CrudRef, CrudData);
   
-        // Actualiza el campo 'nombre'
-        CrudData.nombre = nombre;
-  
-        // Actualiza el documento en Firestore
-        await updateDoc(CrudRef, CrudData);
-  
-        // Agrega un mensaje de éxito a los flash antes de redirigir
         req.flash('success_msg', 'El libro fue actualizado con éxito');
   
         res.redirect("/crud");
